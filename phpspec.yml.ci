@@ -1,0 +1,10 @@
+suites:
+    logger_plugin_suite:
+        namespace: Http\Client\Common\Plugin
+        psr4_prefix: Http\Client\Common\Plugin
+formatter.name: pretty
+extensions:
+    - PhpSpec\Extension\CodeCoverageExtension
+code_coverage:
+    format: clover
+    output: build/coverage.xml
