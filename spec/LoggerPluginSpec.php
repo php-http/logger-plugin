@@ -45,8 +45,8 @@ class LoggerPluginSpec extends ObjectBehavior
             "Received response:\n200 OK 1.1\n\nfor request:\nGET / 1.1",
             Argument::that(
                 function(array $context) use ($request, $response) {
-                    return $context['request'] === $request
-                        && $context['response'] === $response
+                    return $context['request'] === $request->getWrappedObject()
+                        && $context['response'] === $response->getWrappedObject()
                         && is_int($context['milliseconds'])
                     ;
                 }
@@ -71,7 +71,7 @@ class LoggerPluginSpec extends ObjectBehavior
             "Error:\nCannot connect\nwhen sending request:\nGET / 1.1",
             Argument::that(
                 function(array $context) use ($request, $exception) {
-                    return $context['request'] === $request
+                    return $context['request'] === $request->getWrappedObject()
                         && $context['exception'] === $exception
                         && is_int($context['milliseconds'])
                     ;
@@ -102,8 +102,8 @@ class LoggerPluginSpec extends ObjectBehavior
             "Error:\nForbidden\nwith response:\n403 Forbidden 1.1\n\nwhen sending request:\nGET / 1.1",
             Argument::that(
                 function(array $context) use ($request, $response, $exception) {
-                    return $context['request'] === $request
-                        && $context['response'] === $response
+                    return $context['request'] === $request->getWrappedObject()
+                        && $context['response'] === $response->getWrappedObject()
                         && $context['exception'] === $exception
                         && is_int($context['milliseconds'])
                         ;
