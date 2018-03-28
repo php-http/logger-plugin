@@ -7,6 +7,7 @@ use Http\Client\Exception\NetworkException;
 use Http\Promise\FulfilledPromise;
 use Http\Promise\RejectedPromise;
 use Http\Message\Formatter;
+use Prophecy\Argument;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UriInterface;
@@ -34,14 +35,23 @@ class LoggerPluginSpec extends ObjectBehavior
         LoggerInterface $logger,
         Formatter $formatter,
         RequestInterface $request,
-        ResponseInterface $response,
-        $milliseconds
+        ResponseInterface $response
     ) {
         $formatter->formatRequest($request)->willReturn('GET / 1.1');
         $formatter->formatResponse($response)->willReturn('200 OK 1.1');
 
         $logger->info("Sending request:\nGET / 1.1", ['request' => $request])->shouldBeCalled();
-        $logger->info("Received response:\n200 OK 1.1\n\nfor request:\nGET / 1.1", ['request' => $request, 'response' => $response, 'milliseconds' => $milliseconds])->shouldBeCalled();
+        $logger->info(
+            "Received response:\n200 OK 1.1\n\nfor request:\nGET / 1.1",
+            Argument::that(
+                function(array $context) use ($request, $response) {
+                    return $context['request'] === $request
+                        && $context['response'] === $response
+                        && is_int($context['milliseconds'])
+                    ;
+                }
+            )
+        )->shouldBeCalled();
 
         $next = function () use ($response) {
             return new FulfilledPromise($response->getWrappedObject());
@@ -50,14 +60,24 @@ class LoggerPluginSpec extends ObjectBehavior
         $this->handleRequest($request, $next, function () {});
     }
 
-    function it_logs_exception(LoggerInterface $logger, Formatter $formatter, RequestInterface $request, $milliseconds)
+    function it_logs_exception(LoggerInterface $logger, Formatter $formatter, RequestInterface $request)
     {
         $formatter->formatRequest($request)->willReturn('GET / 1.1');
 
         $exception = new NetworkException('Cannot connect', $request->getWrappedObject());
 
         $logger->info("Sending request:\nGET / 1.1", ['request' => $request])->shouldBeCalled();
-        $logger->error("Error:\nCannot connect\nwhen sending request:\nGET / 1.1", ['request' => $request, 'exception' => $exception, 'milliseconds' => $milliseconds])->shouldBeCalled();
+        $logger->error(
+            "Error:\nCannot connect\nwhen sending request:\nGET / 1.1",
+            Argument::that(
+                function(array $context) use ($request, $exception) {
+                    return $context['request'] === $request
+                        && $context['exception'] === $exception
+                        && is_int($context['milliseconds'])
+                    ;
+                }
+            )
+        )->shouldBeCalled();
 
         $next = function () use ($exception) {
             return new RejectedPromise($exception);
@@ -70,8 +90,7 @@ class LoggerPluginSpec extends ObjectBehavior
         LoggerInterface $logger,
         Formatter $formatter,
         RequestInterface $request,
-        ResponseInterface $response,
-        $milliseconds
+        ResponseInterface $response
     ) {
         $formatter->formatRequest($request)->willReturn('GET / 1.1');
         $formatter->formatResponse($response)->willReturn('403 Forbidden 1.1');
@@ -79,12 +98,18 @@ class LoggerPluginSpec extends ObjectBehavior
         $exception = new HttpException('Forbidden', $request->getWrappedObject(), $response->getWrappedObject());
 
         $logger->info("Sending request:\nGET / 1.1", ['request' => $request])->shouldBeCalled();
-        $logger->error("Error:\nForbidden\nwith response:\n403 Forbidden 1.1\n\nwhen sending request:\nGET / 1.1", [
-            'request'      => $request,
-            'response'     => $response,
-            'exception'    => $exception,
-            'milliseconds' => $milliseconds
-        ])->shouldBeCalled();
+        $logger->error(
+            "Error:\nForbidden\nwith response:\n403 Forbidden 1.1\n\nwhen sending request:\nGET / 1.1",
+            Argument::that(
+                function(array $context) use ($request, $response, $exception) {
+                    return $context['request'] === $request
+                        && $context['response'] === $response
+                        && $context['exception'] === $exception
+                        && is_int($context['milliseconds'])
+                        ;
+                }
+            )
+        )->shouldBeCalled();
 
         $next = function () use ($exception) {
             return new RejectedPromise($exception);
