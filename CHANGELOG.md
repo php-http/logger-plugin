@@ -1,7 +1,7 @@
 # Change Log
 
 
-## 1.1.0 - 2018-03-29
+## 1.1.0 - 2018-04-29
 
 - Start measuring the time it took to do the request. 
 
