@@ -11,9 +11,9 @@
         }
     ],
     "require": {
-        "php": ">=5.4",
+        "php": "^5.4 || ^7.0",
         "psr/log": "^1.0",
-        "php-http/client-common": "^1.1",
+        "php-http/client-common": "^1.9 || ^2.0",
         "php-http/message": "^1.0"
     },
     "require-dev": {
