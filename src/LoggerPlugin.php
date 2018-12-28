@@ -6,6 +6,7 @@ use Http\Client\Common\Plugin;
 use Http\Client\Exception;
 use Http\Message\Formatter;
 use Http\Message\Formatter\SimpleFormatter;
+use Http\Promise\Promise;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
@@ -30,7 +31,7 @@ final class LoggerPlugin implements Plugin
     /**
      * {@inheritdoc}
      */
-    public function handleRequest(RequestInterface $request, callable $next, callable $first)
+    public function handleRequest(RequestInterface $request, callable $next, callable $first): Promise
     {
         $start = microtime(true);
         $this->logger->info(sprintf("Sending request:\n%s", $this->formatter->formatRequest($request)), ['request' => $request]);
