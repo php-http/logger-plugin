@@ -29,13 +29,10 @@ matrix:
         - php: 5.4
           env: COMPOSER_FLAGS="--prefer-stable --prefer-lowest" COVERAGE=true TEST_COMMAND="composer test-ci"
         - php: 7.2
-          env: DEPENDENCIES="php-http/client-common:^1.9"
-
-before_install:
-    - if ! [ -z "$DEPENDENCIES" ]; then composer require --no-update ${DEPENDENCIES}; fi;
+          env: COMPOSER_FLAGS="--prefer-stable --prefer-lowest"
 
 install:
-    - travis_retry composer update ${COMPOSER_FLAGS} --prefer-dist --no-interaction
+    - composer update ${COMPOSER_FLAGS} --prefer-dist --no-interaction
 
 script:
     - $TEST_COMMAND
