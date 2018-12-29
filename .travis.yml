@@ -28,7 +28,7 @@ matrix:
     include:
         - php: 5.4
           env: COMPOSER_FLAGS="--prefer-stable --prefer-lowest" COVERAGE=true TEST_COMMAND="composer test-ci"
-        - php: 7.2
+        - php: 7.1
           env: COMPOSER_FLAGS="--prefer-stable --prefer-lowest"
 
 install:
