@@ -17,6 +17,8 @@ use Psr\Log\LoggerInterface;
  */
 final class LoggerPlugin implements Plugin
 {
+    use VersionBridgePlugin;
+
     private $logger;
 
     private $formatter;
@@ -27,10 +29,7 @@ final class LoggerPlugin implements Plugin
         $this->formatter = $formatter ?: new SimpleFormatter();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function handleRequest(RequestInterface $request, callable $next, callable $first)
+    protected function doHandleRequest(RequestInterface $request, callable $next, callable $first)
     {
         $start = microtime(true);
         $this->logger->info(sprintf("Sending request:\n%s", $this->formatter->formatRequest($request)), ['request' => $request]);

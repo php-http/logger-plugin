@@ -28,12 +28,11 @@ matrix:
     include:
         - php: 5.4
           env: COMPOSER_FLAGS="--prefer-stable --prefer-lowest" COVERAGE=true TEST_COMMAND="composer test-ci"
-
-before_install:
-    - travis_retry composer self-update
+        - php: 7.1
+          env: COMPOSER_FLAGS="--prefer-stable --prefer-lowest"
 
 install:
-    - travis_retry composer update ${COMPOSER_FLAGS} --prefer-dist --no-interaction
+    - composer update ${COMPOSER_FLAGS} --prefer-dist --no-interaction
 
 script:
     - $TEST_COMMAND
