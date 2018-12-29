@@ -15,8 +15,10 @@ use Psr\Log\LoggerInterface;
  *
  * @author Joel Wurtz <joel.wurtz@gmail.com>
  */
-final class LoggerPlugin extends VersionBridgePlugin
+final class LoggerPlugin implements Plugin
 {
+    use VersionBridgePlugin;
+
     private $logger;
 
     private $formatter;
