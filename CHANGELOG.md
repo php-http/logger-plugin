@@ -1,9 +1,10 @@
 # Change Log
 
 
-## 1.1.0 - 2018-04-29
+## 1.1.0 - 2019-01-19
 
-- Start measuring the time it took to do the request. 
+- Support client-common 1.9 and 2
+- Measure the time it took to do the request. 
 
 ## 1.0.0 - 2016-05-05
 
