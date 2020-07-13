@@ -31,11 +31,11 @@ final class LoggerPlugin implements Plugin
 
     protected function doHandleRequest(RequestInterface $request, callable $next, callable $first)
     {
-        $start = microtime(true);
+        $start = hrtime(true)/1E6;
         $this->logger->info(sprintf("Sending request:\n%s", $this->formatter->formatRequest($request)), ['request' => $request]);
 
         return $next($request)->then(function (ResponseInterface $response) use ($request, $start) {
-            $milliseconds = (int) round((microtime(true) - $start) * 1000);
+            $milliseconds = (int) round(hrtime(true)/1E6 - $start);
             $this->logger->info(
                 sprintf("Received response:\n%s\n\nfor request:\n%s", $this->formatter->formatResponse($response), $this->formatter->formatRequest($request)),
                 [
@@ -47,7 +47,7 @@ final class LoggerPlugin implements Plugin
 
             return $response;
         }, function (Exception $exception) use ($request, $start) {
-            $milliseconds = (int) round((microtime(true) - $start) * 1000);
+            $milliseconds = (int) round((hrtime(true)/1E6 - $start));
             if ($exception instanceof Exception\HttpException) {
                 $this->logger->error(
                     sprintf("Error:\n%s\nwith response:\n%s\n\nwhen sending request:\n%s", $exception->getMessage(), $this->formatter->formatResponse($exception->getResponse()), $this->formatter->formatRequest($request)),
