@@ -2,6 +2,8 @@
 
 namespace spec\Http\Client\Common\Plugin;
 
+use Http\Client\Common\Plugin;
+use Http\Client\Common\Plugin\LoggerPlugin;
 use Http\Client\Exception\HttpException;
 use Http\Client\Exception\NetworkException;
 use Http\Promise\FulfilledPromise;
@@ -23,12 +25,12 @@ class LoggerPluginSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType('Http\Client\Common\Plugin\LoggerPlugin');
+        $this->shouldHaveType(LoggerPlugin::class);
     }
 
     function it_is_a_plugin()
     {
-        $this->shouldImplement('Http\Client\Common\Plugin');
+        $this->shouldImplement(Plugin::class);
     }
 
     function it_logs_request_and_response(
@@ -106,7 +108,7 @@ class LoggerPluginSpec extends ObjectBehavior
                         && $context['response'] === $response->getWrappedObject()
                         && $context['exception'] === $exception
                         && is_int($context['milliseconds'])
-                        ;
+                    ;
                 }
             )
         )->shouldBeCalled();
