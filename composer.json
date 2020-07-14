@@ -11,14 +11,14 @@
         }
     ],
     "require": {
-        "php": "^5.4 || ^7.0",
+        "php": "^7.1 || ^7.0",
         "psr/log": "^1.0",
         "php-http/client-common": "^1.9 || ^2.0",
-        "php-http/message": "^1.0"
+        "php-http/message": "^1.0",
+        "symfony/polyfill-php73": "^1.17"
     },
     "require-dev": {
-        "phpspec/phpspec": "^2.5",
-        "henrikbjorn/phpspec-code-coverage" : "^1.0"
+        "phpspec/phpspec": "^5.1 || ^6.0"
     },
     "autoload": {
         "psr-4": {
@@ -31,9 +31,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "1.1-dev"
+            "dev-master": "1.2-dev"
         }
-    },
-    "prefer-stable": true,
-    "minimum-stability": "dev"
+    }
 }
