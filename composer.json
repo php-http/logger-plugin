@@ -14,8 +14,7 @@
         "php": "^7.1 || ^7.0",
         "psr/log": "^1.0",
         "php-http/client-common": "^1.9 || ^2.0",
-        "php-http/message": "^1.0",
-        "symfony/polyfill-php73": "^1.17"
+        "php-http/message": "^1.0"
     },
     "require-dev": {
         "phpspec/phpspec": "^5.1 || ^6.0"
