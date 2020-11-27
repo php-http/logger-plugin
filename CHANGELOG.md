@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.2.1 - 2020-11-27
+
+- Allow installation with PHP 8.0
 
 ## 1.2.0 - 2020-07-14
 
