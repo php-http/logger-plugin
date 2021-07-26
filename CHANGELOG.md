@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.2.2 - 2021-07-26
+
+- Allow installation with psr/log version 2 and 3
+
 ## 1.2.1 - 2020-11-27
 
 - Allow installation with PHP 8.0
