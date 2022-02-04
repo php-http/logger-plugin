@@ -38,7 +38,7 @@ final class LoggerPlugin implements Plugin
         return $next($request)->then(function (ResponseInterface $response) use ($request, $start, $uid) {
             $milliseconds = (int) round(hrtime(true) / 1E6 - $start);
             $this->logger->info(
-                sprintf("Received response:\n%s\n\nfor request:\n%s", $this->formatter->formatResponse($response), $this->formatter->formatRequest($request)),
+                sprintf("Received response:\n%s", $this->formatter->formatResponse($response)),
                 [
                     'request' => $request,
                     'response' => $response,
@@ -52,7 +52,7 @@ final class LoggerPlugin implements Plugin
             $milliseconds = (int) round((hrtime(true) / 1E6 - $start));
             if ($exception instanceof Exception\HttpException) {
                 $this->logger->error(
-                    sprintf("Error:\n%s\nwith response:\n%s\n\nwhen sending request:\n%s", $exception->getMessage(), $this->formatter->formatResponse($exception->getResponse()), $this->formatter->formatRequest($request)),
+                    sprintf("Error:\n%s\nwith response:\n%s", $exception->getMessage(), $this->formatter->formatResponse($exception->getResponse())),
                     [
                         'request' => $request,
                         'response' => $exception->getResponse(),
