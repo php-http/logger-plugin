@@ -42,14 +42,24 @@ class LoggerPluginSpec extends ObjectBehavior
         $formatter->formatRequest($request)->willReturn('GET / 1.1');
         $formatter->formatResponse($response)->willReturn('200 OK 1.1');
 
-        $logger->info("Sending request:\nGET / 1.1", ['request' => $request])->shouldBeCalled();
         $logger->info(
-            "Received response:\n200 OK 1.1\n\nfor request:\nGET / 1.1",
+            "Sending request:\nGET / 1.1",
+            Argument::that(
+                function(array $context) use ($request) {
+                    return $context['request'] === $request->getWrappedObject()
+                        && is_string($context['uid'])
+                    ;
+                }
+            )
+        )->shouldBeCalled();
+        $logger->info(
+            "Received response:\n200 OK 1.1",
             Argument::that(
                 function(array $context) use ($request, $response) {
                     return $context['request'] === $request->getWrappedObject()
                         && $context['response'] === $response->getWrappedObject()
                         && is_int($context['milliseconds'])
+                        && is_string($context['uid'])
                     ;
                 }
             )
@@ -68,7 +78,16 @@ class LoggerPluginSpec extends ObjectBehavior
 
         $exception = new NetworkException('Cannot connect', $request->getWrappedObject());
 
-        $logger->info("Sending request:\nGET / 1.1", ['request' => $request])->shouldBeCalled();
+        $logger->info(
+            "Sending request:\nGET / 1.1",
+            Argument::that(
+                function(array $context) use ($request) {
+                    return $context['request'] === $request->getWrappedObject()
+                        && is_string($context['uid'])
+                        ;
+                }
+            )
+        )->shouldBeCalled();
         $logger->error(
             "Error:\nCannot connect\nwhen sending request:\nGET / 1.1",
             Argument::that(
@@ -76,6 +95,7 @@ class LoggerPluginSpec extends ObjectBehavior
                     return $context['request'] === $request->getWrappedObject()
                         && $context['exception'] === $exception
                         && is_int($context['milliseconds'])
+                        && is_string($context['uid'])
                     ;
                 }
             )
@@ -99,15 +119,25 @@ class LoggerPluginSpec extends ObjectBehavior
 
         $exception = new HttpException('Forbidden', $request->getWrappedObject(), $response->getWrappedObject());
 
-        $logger->info("Sending request:\nGET / 1.1", ['request' => $request])->shouldBeCalled();
+        $logger->info(
+            "Sending request:\nGET / 1.1",
+            Argument::that(
+                function(array $context) use ($request) {
+                    return $context['request'] === $request->getWrappedObject()
+                        && is_string($context['uid'])
+                    ;
+                }
+            )
+        )->shouldBeCalled();
         $logger->error(
-            "Error:\nForbidden\nwith response:\n403 Forbidden 1.1\n\nwhen sending request:\nGET / 1.1",
+            "Error:\nForbidden\nwith response:\n403 Forbidden 1.1",
             Argument::that(
                 function(array $context) use ($request, $response, $exception) {
                     return $context['request'] === $request->getWrappedObject()
                         && $context['response'] === $response->getWrappedObject()
                         && $context['exception'] === $exception
                         && is_int($context['milliseconds'])
+                        && is_string($context['uid'])
                     ;
                 }
             )
