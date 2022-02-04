@@ -32,9 +32,10 @@ final class LoggerPlugin implements Plugin
     protected function doHandleRequest(RequestInterface $request, callable $next, callable $first)
     {
         $start = hrtime(true) / 1E6;
-        $this->logger->info(sprintf("Sending request:\n%s", $this->formatter->formatRequest($request)), ['request' => $request]);
+        $uid = uniqid('', true);
+        $this->logger->info(sprintf("Sending request:\n%s", $this->formatter->formatRequest($request)), ['request' => $request, 'uid' => $uid]);
 
-        return $next($request)->then(function (ResponseInterface $response) use ($request, $start) {
+        return $next($request)->then(function (ResponseInterface $response) use ($request, $start, $uid) {
             $milliseconds = (int) round(hrtime(true) / 1E6 - $start);
             $this->logger->info(
                 sprintf("Received response:\n%s\n\nfor request:\n%s", $this->formatter->formatResponse($response), $this->formatter->formatRequest($request)),
@@ -42,11 +43,12 @@ final class LoggerPlugin implements Plugin
                     'request' => $request,
                     'response' => $response,
                     'milliseconds' => $milliseconds,
+                    'uid' => $uid,
                 ]
             );
 
             return $response;
-        }, function (Exception $exception) use ($request, $start) {
+        }, function (Exception $exception) use ($request, $start, $uid) {
             $milliseconds = (int) round((hrtime(true) / 1E6 - $start));
             if ($exception instanceof Exception\HttpException) {
                 $this->logger->error(
@@ -56,6 +58,7 @@ final class LoggerPlugin implements Plugin
                         'response' => $exception->getResponse(),
                         'exception' => $exception,
                         'milliseconds' => $milliseconds,
+                        'uid' => $uid,
                     ]
                 );
             } else {
@@ -65,6 +68,7 @@ final class LoggerPlugin implements Plugin
                         'request' => $request,
                         'exception' => $exception,
                         'milliseconds' => $milliseconds,
+                        'uid' => $uid,
                     ]
                 );
             }
