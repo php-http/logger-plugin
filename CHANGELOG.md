@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.3.0 - tomorrow
+
+- Deduplicate request log in response logs
+- Link request log with response log by UID
+
 ## 1.2.2 - 2021-07-26
 
 - Allow installation with psr/log version 2 and 3
