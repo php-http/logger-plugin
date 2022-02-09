@@ -1,5 +1,13 @@
 # Change Log
 
+## 1.3.0 - unreleased
+
+- Do not log request when loggin response again, but use UID to identify request
+  that belongs to response.
+  If you use a logger that does not log `info` severity and want the request
+  logged when an error happened, use a Fingerscrossed log handler to also log
+  info if any error is logged.
+
 ## 1.2.2 - 2021-07-26
 
 - Allow installation with psr/log version 2 and 3
