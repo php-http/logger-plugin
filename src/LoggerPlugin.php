@@ -35,10 +35,13 @@ final class LoggerPlugin implements Plugin
         $uid = uniqid('', true);
         $this->logger->info(sprintf("Sending request:\n%s", $this->formatter->formatRequest($request)), ['request' => $request, 'uid' => $uid]);
 
-        return $next($request)->then(function (ResponseInterface $response) use ($start, $uid) {
+        return $next($request)->then(function (ResponseInterface $response) use ($start, $uid, $request) {
             $milliseconds = (int) round(hrtime(true) / 1E6 - $start);
+            $formattedResponse = method_exists($this->formatter, 'formatResponseForRequest')
+                ? $this->formatter->formatResponseForRequest($response, $request)
+                : $this->formatter->formatResponse($response);
             $this->logger->info(
-                sprintf("Received response:\n%s", $this->formatter->formatResponse($response)),
+                sprintf("Received response:\n%s", $formattedResponse),
                 [
                     'milliseconds' => $milliseconds,
                     'uid' => $uid,
@@ -49,8 +52,11 @@ final class LoggerPlugin implements Plugin
         }, function (Exception $exception) use ($request, $start, $uid) {
             $milliseconds = (int) round((hrtime(true) / 1E6 - $start));
             if ($exception instanceof Exception\HttpException) {
+                $formattedResponse = method_exists($this->formatter, 'formatResponseForRequest')
+                    ? $this->formatter->formatResponseForRequest($exception->getResponse(), $exception->getRequest())
+                    : $this->formatter->formatResponse($exception->getResponse());
                 $this->logger->error(
-                    sprintf("Error:\n%s\nwith response:\n%s", $exception->getMessage(), $this->formatter->formatResponse($exception->getResponse())),
+                    sprintf("Error:\n%s\nwith response:\n%s", $exception->getMessage(), $formattedResponse),
                     [
                         'exception' => $exception,
                         'milliseconds' => $milliseconds,
