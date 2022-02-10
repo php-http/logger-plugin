@@ -35,13 +35,11 @@ final class LoggerPlugin implements Plugin
         $uid = uniqid('', true);
         $this->logger->info(sprintf("Sending request:\n%s", $this->formatter->formatRequest($request)), ['request' => $request, 'uid' => $uid]);
 
-        return $next($request)->then(function (ResponseInterface $response) use ($request, $start, $uid) {
+        return $next($request)->then(function (ResponseInterface $response) use ($start, $uid) {
             $milliseconds = (int) round(hrtime(true) / 1E6 - $start);
             $this->logger->info(
                 sprintf("Received response:\n%s", $this->formatter->formatResponse($response)),
                 [
-                    'request' => $request,
-                    'response' => $response,
                     'milliseconds' => $milliseconds,
                     'uid' => $uid,
                 ]
@@ -54,8 +52,6 @@ final class LoggerPlugin implements Plugin
                 $this->logger->error(
                     sprintf("Error:\n%s\nwith response:\n%s", $exception->getMessage(), $this->formatter->formatResponse($exception->getResponse())),
                     [
-                        'request' => $request,
-                        'response' => $exception->getResponse(),
                         'exception' => $exception,
                         'milliseconds' => $milliseconds,
                         'uid' => $uid,
@@ -65,7 +61,6 @@ final class LoggerPlugin implements Plugin
                 $this->logger->error(
                     sprintf("Error:\n%s\nwhen sending request:\n%s", $exception->getMessage(), $this->formatter->formatRequest($request)),
                     [
-                        'request' => $request,
                         'exception' => $exception,
                         'milliseconds' => $milliseconds,
                         'uid' => $uid,
