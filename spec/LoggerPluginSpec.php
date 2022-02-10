@@ -40,8 +40,11 @@ class LoggerPluginSpec extends ObjectBehavior
         ResponseInterface $response
     ) {
         $formatter->formatRequest($request)->willReturn('GET / 1.1');
-        $formatter->formatResponse($response)->willReturn('200 OK 1.1');
-        $formatter->formatResponseForRequest($response, $request)->willReturn('200 OK 1.1');
+        if (method_exists(Formatter\SimpleFormatter::class, 'formatResponseForRequest')) {
+            $formatter->formatResponseForRequest($response, $request)->willReturn('200 OK 1.1');
+        } else {
+            $formatter->formatResponse($response)->willReturn('200 OK 1.1');
+        }
 
         $logger->info(
             "Sending request:\nGET / 1.1",
@@ -109,8 +112,11 @@ class LoggerPluginSpec extends ObjectBehavior
         ResponseInterface $response
     ) {
         $formatter->formatRequest($request)->willReturn('GET / 1.1');
-        $formatter->formatResponse($response)->willReturn('403 Forbidden 1.1');
-        $formatter->formatResponseForRequest($response, $request)->willReturn('403 Forbidden 1.1');
+        if (method_exists(Formatter\SimpleFormatter::class, 'formatResponseForRequest')) {
+            $formatter->formatResponseForRequest($response, $request)->willReturn('403 Forbidden 1.1');
+        } else {
+            $formatter->formatResponse($response)->willReturn('403 Forbidden 1.1');
+        }
 
         $exception = new HttpException('Forbidden', $request->getWrappedObject(), $response->getWrappedObject());
 
