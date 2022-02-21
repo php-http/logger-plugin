@@ -33,7 +33,7 @@ final class LoggerPlugin implements Plugin
     {
         $start = hrtime(true) / 1E6;
         $uid = uniqid('', true);
-        $this->logger->info(sprintf("Sending request:\n%s", $this->formatter->formatRequest($request)), ['request' => $request, 'uid' => $uid]);
+        $this->logger->info(sprintf("Sending request:\n%s", $this->formatter->formatRequest($request)), ['uid' => $uid]);
 
         return $next($request)->then(function (ResponseInterface $response) use ($start, $uid, $request) {
             $milliseconds = (int) round(hrtime(true) / 1E6 - $start);
