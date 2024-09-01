@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.3.1 - 2024-09-01
+
+- Removed the last place where we forgot the request in the log context.
+
 ## 1.3.0 - 2022-02-11
 
 - Do not log request when loggin response again, but use UID to identify request
