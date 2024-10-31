@@ -1,5 +1,15 @@
 # Change Log
 
+## 1.4.0 - 2024-10-31
+
+- Support PHP 8.3 and 8.4
+- Remove support for EOL PHP versions < 8.2
+
+CI:
+
+- Rewrote testing with phpunit instead of phpspec.
+- Removed unused scrutinizer from build
+
 ## 1.3.1 - 2024-09-01
 
 - Removed the last place where we forgot the request in the log context.
