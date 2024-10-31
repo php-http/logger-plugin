@@ -6,6 +6,7 @@ use Http\Client\Common\Plugin;
 use Http\Client\Exception;
 use Http\Message\Formatter;
 use Http\Message\Formatter\SimpleFormatter;
+use Http\Promise\Promise;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
@@ -15,21 +16,18 @@ use Psr\Log\LoggerInterface;
  *
  * @author Joel Wurtz <joel.wurtz@gmail.com>
  */
-final class LoggerPlugin implements Plugin
+final readonly class LoggerPlugin implements Plugin
 {
-    use VersionBridgePlugin;
+    private Formatter $formatter;
 
-    private $logger;
-
-    private $formatter;
-
-    public function __construct(LoggerInterface $logger, Formatter $formatter = null)
-    {
-        $this->logger = $logger;
-        $this->formatter = $formatter ?: new SimpleFormatter();
+    public function __construct(
+        private LoggerInterface $logger,
+        ?Formatter $formatter = null
+    ) {
+        $this->formatter = $formatter ?? new SimpleFormatter();
     }
 
-    protected function doHandleRequest(RequestInterface $request, callable $next, callable $first)
+    public function handleRequest(RequestInterface $request, callable $next, callable $first): Promise
     {
         $start = hrtime(true) / 1E6;
         $uid = uniqid('', true);
@@ -37,9 +35,7 @@ final class LoggerPlugin implements Plugin
 
         return $next($request)->then(function (ResponseInterface $response) use ($start, $uid, $request) {
             $milliseconds = (int) round(hrtime(true) / 1E6 - $start);
-            $formattedResponse = method_exists($this->formatter, 'formatResponseForRequest')
-                ? $this->formatter->formatResponseForRequest($response, $request)
-                : $this->formatter->formatResponse($response);
+            $formattedResponse = $this->formatter->formatResponseForRequest($response, $request);
             $this->logger->info(
                 sprintf("Received response:\n%s", $formattedResponse),
                 [
@@ -52,9 +48,7 @@ final class LoggerPlugin implements Plugin
         }, function (Exception $exception) use ($request, $start, $uid) {
             $milliseconds = (int) round(hrtime(true) / 1E6 - $start);
             if ($exception instanceof Exception\HttpException) {
-                $formattedResponse = method_exists($this->formatter, 'formatResponseForRequest')
-                    ? $this->formatter->formatResponseForRequest($exception->getResponse(), $exception->getRequest())
-                    : $this->formatter->formatResponse($exception->getResponse());
+                $formattedResponse = $this->formatter->formatResponseForRequest($exception->getResponse(), $exception->getRequest());
                 $this->logger->error(
                     sprintf("Error:\n%s\nwith response:\n%s", $exception->getMessage(), $formattedResponse),
                     [
