@@ -50,7 +50,7 @@ final class LoggerPlugin implements Plugin
 
             return $response;
         }, function (Exception $exception) use ($request, $start, $uid) {
-            $milliseconds = (int) round((hrtime(true) / 1E6 - $start));
+            $milliseconds = (int) round(hrtime(true) / 1E6 - $start);
             if ($exception instanceof Exception\HttpException) {
                 $formattedResponse = method_exists($this->formatter, 'formatResponseForRequest')
                     ? $this->formatter->formatResponseForRequest($exception->getResponse(), $exception->getRequest())
