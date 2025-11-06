@@ -31,7 +31,13 @@ final readonly class LoggerPlugin implements Plugin
     {
         $start = hrtime(true) / 1E6;
         $uid = uniqid('', true);
-        $this->logger->info(sprintf("Sending request:\n%s", $this->formatter->formatRequest($request)), ['uid' => $uid]);
+        $this->logger->info(
+            sprintf("Sending request:\n%s", $this->formatter->formatRequest($request)),
+            [
+                'uid' => $uid,
+                'uri' => (string) $request->getUri(),
+            ]
+        );
 
         return $next($request)->then(function (ResponseInterface $response) use ($start, $uid, $request) {
             $milliseconds = (int) round(hrtime(true) / 1E6 - $start);
@@ -41,6 +47,7 @@ final readonly class LoggerPlugin implements Plugin
                 [
                     'milliseconds' => $milliseconds,
                     'uid' => $uid,
+                    'uri' => (string) $request->getUri(),
                 ]
             );
 
@@ -55,6 +62,7 @@ final readonly class LoggerPlugin implements Plugin
                         'exception' => $exception,
                         'milliseconds' => $milliseconds,
                         'uid' => $uid,
+                        'uri' => (string) $request->getUri(),
                     ]
                 );
             } else {
@@ -64,6 +72,7 @@ final readonly class LoggerPlugin implements Plugin
                         'exception' => $exception,
                         'milliseconds' => $milliseconds,
                         'uid' => $uid,
+                        'uri' => (string) $request->getUri(),
                     ]
                 );
             }
