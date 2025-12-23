@@ -1,6 +1,6 @@
 # Change Log
 
-## 1.4.1 - unreleased
+## 1.5.0 - unreleased
 
 - Added request uri to log context
 
