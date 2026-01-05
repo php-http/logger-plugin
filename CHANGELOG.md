@@ -1,6 +1,6 @@
 # Change Log
 
-## 1.5.0 - unreleased
+## 1.5.0 - 2026-01-05
 
 - Added request uri to log context
 
