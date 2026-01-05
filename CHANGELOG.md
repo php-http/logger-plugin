@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.5.0 - unreleased
+
+- Added request uri to log context
+
 ## 1.4.0 - 2024-10-31
 
 - Support PHP 8.3 and 8.4

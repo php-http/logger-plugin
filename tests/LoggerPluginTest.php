@@ -30,7 +30,7 @@ final class LoggerPluginTest extends TestCase
         $response = new Response();
 
         $actualResponse = $this->plugin->handleRequest(
-            new Request('GET', 'http://example.com/'),
+            new Request('GET', 'http://example.com/path?query=value#fragment'),
             fn (RequestInterface $req) => new FulfilledPromise($response),
             function () {}
         )->wait();
@@ -38,8 +38,10 @@ final class LoggerPluginTest extends TestCase
         self::assertSame($response, $actualResponse);
 
         self::assertCount(2, $this->logger->logMessages);
-        self::assertSame("Sending request:\nGET http://example.com/ 1.1", $this->logger->logMessages[0]['info']);
+        self::assertSame("Sending request:\nGET http://example.com/path?query=value#fragment 1.1", $this->logger->logMessages[0]['info']);
+        self::assertSame('http://example.com/path?query=value#fragment', $this->logger->logMessages[0]['context']['uri']);
         self::assertSame("Received response:\n200 OK 1.1", $this->logger->logMessages[1]['info']);
+        self::assertSame('http://example.com/path?query=value#fragment', $this->logger->logMessages[1]['context']['uri']);
     }
 
     public function testLogsRequestException()
@@ -55,7 +57,9 @@ final class LoggerPluginTest extends TestCase
         } catch (NetworkException $exception) {
             self::assertCount(2, $this->logger->logMessages);
             self::assertSame("Sending request:\nGET http://example.com/ 1.1", $this->logger->logMessages[0]['info']);
+            self::assertSame('http://example.com/', $this->logger->logMessages[0]['context']['uri']);
             self::assertSame("Error:\nNetwork error\nwhen sending request:\nGET http://example.com/ 1.1", $this->logger->logMessages[1]['error']);
+            self::assertSame('http://example.com/', $this->logger->logMessages[1]['context']['uri']);
 
             throw $exception;
         }
@@ -75,8 +79,12 @@ final class LoggerPluginTest extends TestCase
             // Expected
             $this->assertCount(2, $this->logger->logMessages);
             $this->assertSame("Sending request:\nGET http://example.com/ 1.1", $this->logger->logMessages[0]['info']);
+            self::assertSame('http://example.com/', $this->logger->logMessages[0]['context']['uri']);
+
             // Ensure there's an error log for the exception
             $this->assertStringContainsString("Error:\nNot Found", $this->logger->logMessages[1]['error']);
+            self::assertSame('http://example.com/', $this->logger->logMessages[1]['context']['uri']);
+
             throw $exception;
         }
     }
